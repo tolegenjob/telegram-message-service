@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: telegram-message-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres_db
+    username: user
+    password: password
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    schemas: public
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+telegram:
+  bot:
+    username: Message01062025Bot
+    token: 7795239829:AAFmO3HeuLOOT46tIrk8wl5adcYzBE7I-oY
+
+jwt:
+  secret: UBaQzVzUgSB+vVPSEIDGZBlMOBuKBteowUuDV5ZG4Kk=
+  expirationMs: 86400000
