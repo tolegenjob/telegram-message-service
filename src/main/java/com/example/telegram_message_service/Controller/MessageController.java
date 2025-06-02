@@ -3,14 +3,13 @@ package com.example.telegram_message_service.Controller;
 import com.example.telegram_message_service.Dto.Request.MessageRequest;
 import com.example.telegram_message_service.Dto.Response.MessageResponse;
 import com.example.telegram_message_service.Service.MessageService;
-import com.example.telegram_message_service.Service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -20,19 +19,22 @@ public class MessageController {
     private final MessageService messageService;
 
     @PostMapping
-    public ResponseEntity<Void> sendMessage(@RequestBody MessageRequest request,
-                                            @AuthenticationPrincipal UserDetails userDetails) {
-        messageService.sendMessage(userDetails.getUsername(), request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<MessageResponse> sendMessage(
+            @RequestBody @Valid MessageRequest request,
+            @AuthenticationPrincipal String username
+    ) {
+        MessageResponse response = MessageResponse.toDto(messageService.sendMessage(username, request));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<MessageResponse>> getAllMessages(@AuthenticationPrincipal UserDetails userDetails) {
-        List<MessageResponse> messages = messageService.getMessagesByUsername(userDetails.getUsername())
-                .stream()
-                .map(MessageResponse::toDto)
-                .toList();
-        return ResponseEntity.ok(messages);
+    public ResponseEntity<Page<MessageResponse>> getAllMessages(
+            @AuthenticationPrincipal String username,
+            Pageable pageable
+    ) {
+        Page<MessageResponse> responses = messageService.getMessagesByUsername(username, pageable)
+                .map(MessageResponse::toDto);
+        return ResponseEntity.ok(responses);
     }
 
 }

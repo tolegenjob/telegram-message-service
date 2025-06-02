@@ -1,6 +1,6 @@
 package com.example.telegram_message_service.Security;
 
-import com.example.telegram_message_service.Service.UserService;
+import com.example.telegram_message_service.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,16 +10,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
+import static com.example.telegram_message_service.Util.UserUtil.findUserOrThrow;
+
 
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userService.getUserByUsername(username);
+        var user = findUserOrThrow(userRepository, username);
         return new User(
                 user.getUsername(),
                 user.getPassword(),

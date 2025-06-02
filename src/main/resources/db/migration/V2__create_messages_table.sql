@@ -1,4 +1,4 @@
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     id BIGSERIAL PRIMARY KEY,
     content TEXT NOT NULL,
     sent_at TIMESTAMP NOT NULL,

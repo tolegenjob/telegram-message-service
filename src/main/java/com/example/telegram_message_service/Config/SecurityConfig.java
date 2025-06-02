@@ -25,7 +25,7 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final UserDetailsServiceImpl userDetailsService;
-    private final JwtProperties jwtProperties;
+    private final AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,47 +51,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .cors(AbstractHttpConfigurer::disable)
-//                .exceptionHandling(exceptions -> exceptions
-//                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-//                )
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/api/auth/**").permitAll()
-//                        .anyRequest().permitAll()
-//                )
-//                .sessionManagement(session -> session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                )
-//                .authenticationProvider(authenticationProvider())
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//            .csrf(AbstractHttpConfigurer::disable)
-//            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//            .authorizeHttpRequests(auth -> auth
-//                    .requestMatchers("/api/auth/**").permitAll()
-//                    .anyRequest().authenticated()
-//            )
-//            .authenticationProvider(authenticationProvider())
-//            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-//            .httpBasic(Customizer.withDefaults());
-//        return http.build();
-//    }
 
 }

@@ -13,26 +13,13 @@ public class TelegramService {
     private final TelegramBot telegramBot;
 
     public void sendMessageToUser(User user, String content) {
-        String telegramToken = user.getTelegramToken();
-        if (telegramToken == null) {
-            log.warn("Пользователь {} не привязал Telegram", user.getUsername());
+        Long chatId = user.getTelegramChatId();
+        if (chatId == null) {
+            log.error("User {} had not linked Telegram", user.getUsername());
             return;
         }
-
-        Long chatId;
-        try {
-            chatId = Long.parseLong(telegramToken);
-        } catch (NumberFormatException e) {
-            log.error("Неверный формат telegramToken: {}", telegramToken);
-            return;
-        }
-
-        String message = String.format(
-                "%s, я получил от тебя сообщение:\n%s",
-                user.getName(), content
-        );
-
-        telegramBot.sendMessage(chatId, message);
+        String fullMessage = "%s, я получил от тебя сообщение:\n%s".formatted(user.getName(), content);
+        telegramBot.sendMessage(chatId, fullMessage);
     }
 
 }

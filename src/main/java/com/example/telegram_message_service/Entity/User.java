@@ -33,6 +33,9 @@ public class User{
     @Column(unique = true)
     private String telegramToken;
 
+    @Column(unique = true)
+    private Long telegramChatId;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
