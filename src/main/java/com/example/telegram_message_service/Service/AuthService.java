@@ -5,11 +5,13 @@ import com.example.telegram_message_service.Dto.Request.RegisterRequest;
 import com.example.telegram_message_service.Entity.User;
 import com.example.telegram_message_service.Repository.UserRepository;
 import com.example.telegram_message_service.Security.JwtService;
+import com.example.telegram_message_service.Security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Transactional
     public void register(RegisterRequest request) {
@@ -44,11 +47,8 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password())
         );
-
-        User user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        log.info("User {} logged in", user.getUsername());
-        return jwtService.generateToken(user.getUsername());
+        log.info("User {} logged in", authentication.getName());
+        return jwtService.generateToken(authentication.getName());
     }
 
 }

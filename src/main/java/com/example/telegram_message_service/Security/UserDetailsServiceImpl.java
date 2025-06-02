@@ -1,6 +1,6 @@
 package com.example.telegram_message_service.Security;
 
-import com.example.telegram_message_service.Repository.UserRepository;
+import com.example.telegram_message_service.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,23 +8,22 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: %s".formatted(username)));
-
-        return User
-                .withUsername(user.getUsername())
-                .password(user.getPassword())
-                .authorities("USER")
-                .build();
+        var user = userService.getUserByUsername(username);
+        return new User(
+                user.getUsername(),
+                user.getPassword(),
+                Collections.emptyList()
+        );
     }
-
 }

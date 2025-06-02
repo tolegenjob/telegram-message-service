@@ -3,7 +3,5 @@ CREATE TABLE messages (
     content TEXT NOT NULL,
     sent_at TIMESTAMP NOT NULL,
     user_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_messages_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );

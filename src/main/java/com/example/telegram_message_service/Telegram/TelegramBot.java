@@ -37,10 +37,10 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             Long chatId = update.getMessage().getChatId();
-            String usernameFromUser = update.getMessage().getText();
+            String usernameFromUser = update.getMessage().getChat().getUserName();
 
             userRepository.findByTelegramToken(chatId.toString()).ifPresentOrElse(
-                    user -> log.info("Пользователь уже привязан: {}", user.getUsername()),
+                    user -> log.info("User {} is already linked", user.getUsername()),
                     () -> userRepository.findByUsername(usernameFromUser).ifPresentOrElse(
                             user -> {
                                 user.setTelegramToken(chatId.toString());
@@ -61,7 +61,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            log.error("Ошибка отправки сообщения в Telegram: {}", e.getMessage());
+            log.error("Error sending message to Telegram: {}", e.getMessage());
         }
     }
 

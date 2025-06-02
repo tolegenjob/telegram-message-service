@@ -1,69 +1,62 @@
 package com.example.telegram_message_service.Security;
 
+import com.example.telegram_message_service.Config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.function.Function;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class JwtService {
 
-    private final Key secretKey;
-    private final long jwtExpirationMs;
+    private final JwtProperties jwtProperties;
 
-    public JwtService(
-            @Value("${jwt.secret}") String secret,
-            @Value("${jwt.expirationMs}") long jwtExpirationMs) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-        this.jwtExpirationMs = jwtExpirationMs;
-    }
 
     public String generateToken(String username) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
+        Date expiryDate = new Date(now.getTime() + jwtProperties.expirationMs());
         log.info("Generating token for user {}", username);
         return Jwts.builder()
-                .setSubject(username)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .subject(username)
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (Exception ex) {
-            log.error("Invalid JWT token: {}", ex.getMessage());
-            return false;
-        }
+    public boolean validateToken(String token, UserDetails userDetails) {
+        String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     public String extractUsername(String token) {
         log.info("Extracting username from token {}", token);
-        return extractClaim(token, Claims::getSubject);
+        return extractAllClaimsFromToken(token).getSubject();
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+    private SecretKey getSigningKey() {
+        var key = jwtProperties.secret().getBytes();
+        return Keys.hmacShaKeyFor(key);
+    }
+
+    private Claims extractAllClaimsFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
-        log.info("Extracted claims: {}", claims);
-        return claimsResolver.apply(claims);
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    private Boolean isTokenExpired(String token) {
+        return extractAllClaimsFromToken(token).getExpiration().before(new Date());
     }
 
 }

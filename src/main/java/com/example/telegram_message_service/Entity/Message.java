@@ -10,7 +10,12 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "messages")
-public class Message extends BaseEntity {
+public class Message {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
+    private Long id;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
