@@ -6,14 +6,15 @@ import com.example.telegram_message_service.Entity.User;
 import com.example.telegram_message_service.Exception.AlreadyExistsException;
 import com.example.telegram_message_service.Exception.NotLinkedException;
 import com.example.telegram_message_service.Repository.UserRepository;
+import com.example.telegram_message_service.Telegram.TelegramBot;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.example.telegram_message_service.Util.UserUtil.findUserOrThrow;
 import static com.example.telegram_message_service.Util.TokenGenerator.generateToken;
+import static com.example.telegram_message_service.Util.UserUtil.findUserOrThrow;
 
 @Service
 @Slf4j
@@ -22,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TelegramBot telegramBot;
 
     @Transactional
     public User createUser(RegisterRequest request) {
@@ -68,8 +70,11 @@ public class UserService {
     public void unlinkTelegram(String username) {
         User user = findUserOrThrow(userRepository, username);
         if (user.getTelegramChatId() != null) {
+            Long chatId = user.getTelegramChatId();
+            String message = "Вы отвязались от телеграм";
             user.setTelegramChatId(null);
             userRepository.save(user);
+            telegramBot.sendMessage(chatId, message);
         } else {
             throw new NotLinkedException("User %s is not linked with telegram".formatted(username));
         }
