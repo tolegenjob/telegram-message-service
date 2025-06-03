@@ -68,6 +68,7 @@ JWT_EXPIRATION_MS=your_jwt_expiration_ms
 3. Запустите проект:
 
 ```bash
+./gradlew clean build -x test
 docker-compose up -d
 ```
 
