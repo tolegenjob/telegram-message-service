@@ -40,7 +40,7 @@
 
 ### Предварительные требования
 
-- Java 17+
+- Java 17
 - Docker
 - Telegram Bot Token (через [@BotFather](https://t.me/BotFather))
 
@@ -50,6 +50,7 @@
 
 ```bash
 git clone https://github.com/tolegenjob/telegram-message-service.git
+
 cd telegram-message-service
 ```
 
@@ -68,7 +69,9 @@ JWT_EXPIRATION_MS=your_jwt_expiration_ms
 3. Запустите проект:
 
 ```bash
-./gradlew clean build -x test && docker-compose up -d
+./gradlew clean build -x test
+
+docker-compose up -d
 ```
 
 ---
