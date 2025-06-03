@@ -6,9 +6,9 @@ spring:
     name: telegram-message-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5436/postgres_db
-    username: user
-    password: password
+    url: jdbc:postgresql://localhost:5436/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   flyway:
     enabled: true
@@ -32,9 +32,9 @@ spring:
 
 telegram:
   bot:
-    username: Message01062025Bot
-    token: 7795239829:AAFmO3HeuLOOT46tIrk8wl5adcYzBE7I-oY
+    username: ${TELEGRAM_BOT_USERNAME}
+    token: ${TELEGRAM_BOT_TOKEN}
 
 jwt:
-  secret: UBaQzVzUgSB+vVPSEIDGZBlMOBuKBteowUuDV5ZG4Kk=
-  expirationMs: 86400000
+  secret: ${JWT_SECRET}
+  expirationMs: ${JWT_EXPIRATION_MS}
