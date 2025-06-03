@@ -50,7 +50,6 @@
 
 ```bash
 git clone https://github.com/tolegenjob/telegram-message-service.git
-
 cd telegram-message-service
 ```
 
@@ -70,7 +69,6 @@ JWT_EXPIRATION_MS=your_jwt_expiration_ms
 
 ```bash
 ./gradlew clean build -x test
-
 docker-compose up -d
 ```
 
