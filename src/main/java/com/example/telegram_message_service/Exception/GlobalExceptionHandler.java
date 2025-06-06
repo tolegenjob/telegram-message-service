@@ -54,14 +54,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorResponse> handleException(Throwable t) {
-//        log.error("Unexpected error: {}", t.getMessage());
-//        ErrorResponse errorResponse = ErrorResponse.builder()
-//                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .message(t.getMessage())
-//                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-//                .build();
-//        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(Throwable t) {
+        log.error("Unexpected error: {}", t.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .message(t.getMessage())
+                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
